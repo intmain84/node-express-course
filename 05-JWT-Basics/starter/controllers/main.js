@@ -1,10 +1,10 @@
-const CustomAPIError = require("../errors/custom-error");
 const jwt = require("jsonwebtoken");
+const { BadRequestError } = require("../errors");
 
 const login = async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
-    throw new CustomAPIError("Provide username or password", 400);
+    throw new BadRequestError("Provide username or password");
   }
 
   const id = new Date().getDate();
@@ -17,20 +17,9 @@ const login = async (req, res) => {
 };
 
 const dashboard = async (req, res) => {
-  //Вытаскиваем Bearer с токеном
-  const authHeader = req.headers.authorization;
-
-  //Проверяем есть ли оно вообще + пришло ли оно в формате Bearer 00000
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    throw new CustomAPIError("No token provided", 401);
-  }
-
-  const token = authHeader.split(" ")[1];
-  console.log(token);
-
   const luckyNumber = Math.floor(Math.random() * 100);
   res.status(200).json({
-    msg: `Hello, John Doe`,
+    msg: `Hello, ${req.user.username}`,
     secret: `Here is your authorized data, your lucky number is: ${luckyNumber}`,
   });
 };
