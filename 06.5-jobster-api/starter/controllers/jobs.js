@@ -3,9 +3,30 @@ const { StatusCodes } = require("http-status-codes");
 const { BadRequestError, NotFoundError } = require("../errors");
 
 const getAllJobs = async (req, res) => {
-  const jobs = await Job.find({ createdBy: req.user.userId }).sort("createdAt");
-  res.status(StatusCodes.OK).json({ jobs, count: jobs.length });
+  const { search, status, jobType, sort } = req.query;
+  const queryObject = {
+    createdBy: req.user.userId,
+  };
+
+  //!Search functionality
+  if (search) {
+    queryObject.position = { $regex: search, $options: "i" };
+  }
+
+  if (status && status !== "all") {
+    queryObject.status = status;
+  }
+
+  if (jobType && jobType !== "all") {
+    queryObject.jobType = jobType;
+  }
+
+  let result = Job.find(queryObject);
+
+  const jobs = await result;
+  res.status(StatusCodes.OK).json({ jobs });
 };
+
 const getJob = async (req, res) => {
   const {
     user: { userId },
@@ -16,6 +37,7 @@ const getJob = async (req, res) => {
     _id: jobId,
     createdBy: userId,
   });
+
   if (!job) {
     throw new NotFoundError(`No job with id ${jobId}`);
   }
