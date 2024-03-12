@@ -56,7 +56,7 @@ const updateUser = async (req, res) => {
     { name, email, lastName, location },
     { new: true, runValidators: true }
   );
-  console.log(result.name);
+
   if (!result) {
     throw new NotFoundError(`No job with id ${userId}`);
   }

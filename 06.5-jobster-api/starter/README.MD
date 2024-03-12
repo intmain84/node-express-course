@@ -42,14 +42,14 @@ npm start
   app.js
 
 ```js
-const swaggerUI = require('swagger-ui-express');
-const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./swagger.yaml');
+const swaggerUI = require("swagger-ui-express");
+const YAML = require("yamljs");
+const swaggerDocument = YAML.load("./swagger.yaml");
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.send('<h1>Jobs API</h1><a href="/api-docs">Documentation</a>');
 });
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 ```
 
 #### Remove API Limiter
@@ -59,9 +59,9 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 app.js
 
 ```js
-const rateLimiter = require('express-rate-limit');
+const rateLimiter = require("express-rate-limit");
 
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -76,7 +76,7 @@ app.use(
 - remove these lines of code
 
 ```js
-const cors = require('cors');
+const cors = require("cors");
 app.use(cors());
 ```
 
@@ -113,7 +113,7 @@ utils/axios.js
 
 ```js
 const customFetch = axios.create({
-  baseURL: '/api/v1',
+  baseURL: "/api/v1",
 });
 ```
 
@@ -131,9 +131,9 @@ const customFetch = axios.create({
 app.js
 
 ```js
-const path = require('path');
+const path = require("path");
 
-app.use(express.static(path.resolve(__dirname, './client/build')));
+app.use(express.static(path.resolve(__dirname, "./client/build")));
 
 // place as first middleware
 app.use(express.json());
@@ -146,12 +146,12 @@ app.use(xss());
 - front-end routes pick's it up from there
 
 ```js
-app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/jobs', authenticateUser, jobsRouter);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/jobs", authenticateUser, jobsRouter);
 
 // serve index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, './client/build', 'index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
 });
 
 app.use(notFoundMiddleware);
@@ -239,13 +239,13 @@ res.status(StatusCodes.CREATED).json({
 routes/auth.js
 
 ```js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const authenticateUser = require('../middleware/authentication');
-const { register, login, updateUser } = require('../controllers/auth');
-router.post('/register', register);
-router.post('/login', login);
-router.patch('/updateUser', authenticateUser, updateUser);
+const authenticateUser = require("../middleware/authentication");
+const { register, login, updateUser } = require("../controllers/auth");
+router.post("/register", register);
+router.post("/login", login);
+router.patch("/updateUser", authenticateUser, updateUser);
 
 module.exports = router;
 ```
@@ -270,7 +270,7 @@ controllers/auth.js
 const updateUser = async (req, res) => {
   const { email, name, lastName, location } = req.body;
   if (!email || !name || !lastName || !location) {
-    throw new BadRequestError('Please provide all values');
+    throw new BadRequestError("Please provide all values");
   }
   const user = await User.findOne({ _id: req.user.userId });
 
@@ -302,8 +302,8 @@ const updateUser = async (req, res) => {
 - this.modifiedPaths();
 
 ```js
-UserSchema.pre('save', async function () {
-  if (!this.isModified('password')) return;
+UserSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
@@ -343,19 +343,19 @@ jobType: {
 populate.js
 
 ```js
-require('dotenv').config();
+require("dotenv").config();
 
-const mockData = require('./mock-data.json');
+const mockData = require("./mock-data.json");
 
-const Job = require('./models/Job');
-const connectDB = require('./db/connect');
+const Job = require("./models/Job");
+const connectDB = require("./db/connect");
 
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URI);
 
     await Job.create(mockData);
-    console.log('Success!!!');
+    console.log("Success!!!");
     process.exit(0);
   } catch (error) {
     console.log(error);
@@ -382,14 +382,14 @@ const getAllJobs = async (req, res) => {
   };
 
   if (search) {
-    queryObject.position = { $regex: search, $options: 'i' };
+    queryObject.position = { $regex: search, $options: "i" };
   }
   // add stuff based on condition
 
-  if (status && status !== 'all') {
+  if (status && status !== "all") {
     queryObject.status = status;
   }
-  if (jobType && jobType !== 'all') {
+  if (jobType && jobType !== "all") {
     queryObject.jobType = jobType;
   }
 
@@ -399,17 +399,17 @@ const getAllJobs = async (req, res) => {
 
   // chain sort conditions
 
-  if (sort === 'latest') {
-    result = result.sort('-createdAt');
+  if (sort === "latest") {
+    result = result.sort("-createdAt");
   }
-  if (sort === 'oldest') {
-    result = result.sort('createdAt');
+  if (sort === "oldest") {
+    result = result.sort("createdAt");
   }
-  if (sort === 'a-z') {
-    result = result.sort('position');
+  if (sort === "a-z") {
+    result = result.sort("position");
   }
-  if (sort === 'z-a') {
-    result = result.sort('-position');
+  if (sort === "z-a") {
+    result = result.sort("-position");
   }
 
   //
@@ -436,7 +436,7 @@ middleware/authentication.js
 
 ```js
 const payload = jwt.verify(token, process.env.JWT_SECRET);
-const testUser = payload.userId === '62eff8bcdb9af70b4155349d';
+const testUser = payload.userId === "62eff8bcdb9af70b4155349d";
 req.user = { userId: payload.userId, testUser };
 ```
 
@@ -445,11 +445,11 @@ req.user = { userId: payload.userId, testUser };
 middleware/testUser
 
 ```js
-const { BadRequestError } = require('../errors');
+const { BadRequestError } = require("../errors");
 
 const testUser = (req, res, next) => {
   if (req.user.testUser) {
-    throw new BadRequestError('Test User. Read Only!');
+    throw new BadRequestError("Test User. Read Only!");
   }
   next();
 };
@@ -460,15 +460,15 @@ module.exports = testUser;
 - add to auth routes (updateUser)
 
 ```js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const authenticateUser = require('../middleware/authentication');
-const testUser = require('../middleware/testUser');
-const { register, login, updateUser } = require('../controllers/auth');
+const authenticateUser = require("../middleware/authentication");
+const testUser = require("../middleware/testingUser");
+const { register, login, updateUser } = require("../controllers/auth");
 
-router.post('/register', register);
-router.post('/login', login);
-router.patch('/updateUser', authenticateUser, testUser, updateUser);
+router.post("/register", register);
+router.post("/login", login);
+router.patch("/updateUser", authenticateUser, testUser, updateUser);
 
 module.exports = router;
 ```
@@ -478,7 +478,7 @@ module.exports = router;
 routes/jobs.js
 
 ```js
-const express = require('express');
+const express = require("express");
 
 const router = express.Router();
 const {
@@ -488,13 +488,13 @@ const {
   updateJob,
   getJob,
   showStats,
-} = require('../controllers/jobs');
-const testUser = require('../middleware/testUser');
+} = require("../controllers/jobs");
+const testUser = require("../middleware/testUser");
 
-router.route('/').post(testUser, createJob).get(getAllJobs);
-router.route('/stats').get(showStats);
+router.route("/").post(testUser, createJob).get(getAllJobs);
+router.route("/stats").get(showStats);
 router
-  .route('/:id')
+  .route("/:id")
   .get(getJob)
   .delete(testUser, deleteJob)
   .patch(testUser, updateJob);
@@ -507,24 +507,24 @@ module.exports = router;
 routes/auth.js
 
 ```js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const authenticateUser = require('../middleware/authentication');
-const testUser = require('../middleware/testUser');
-const { register, login, updateUser } = require('../controllers/auth');
+const authenticateUser = require("../middleware/authentication");
+const testUser = require("../middleware/testUser");
+const { register, login, updateUser } = require("../controllers/auth");
 
-const rateLimiter = require('express-rate-limit');
+const rateLimiter = require("express-rate-limit");
 const apiLimiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10,
   message: {
-    msg: 'Too many requests from this IP, please try again after 15 minutes',
+    msg: "Too many requests from this IP, please try again after 15 minutes",
   },
 });
 
-router.post('/register', apiLimiter, register);
-router.post('/login', apiLimiter, login);
-router.patch('/updateUser', authenticateUser, testUser, updateUser);
+router.post("/register", apiLimiter, register);
+router.post("/login", apiLimiter, login);
+router.patch("/updateUser", authenticateUser, testUser, updateUser);
 
 module.exports = router;
 ```
@@ -532,9 +532,9 @@ module.exports = router;
 app.js
 
 ```js
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
-app.use(express.static(path.resolve(__dirname, './client/build')));
+app.use(express.static(path.resolve(__dirname, "./client/build")));
 ```
 
 #### Setup Stats Route
@@ -561,7 +561,7 @@ module.exports = {
 routes/jobs.js
 
 ```js
-const express = require('express');
+const express = require("express");
 
 const router = express.Router();
 const {
@@ -571,11 +571,11 @@ const {
   updateJob,
   getJob,
   showStats,
-} = require('../controllers/jobs');
+} = require("../controllers/jobs");
 
-router.route('/').post(createJob).get(getAllJobs);
-router.route('/stats').get(showStats);
-router.route('/:id').get(getJob).delete(deleteJob).patch(updateJob);
+router.route("/").post(createJob).get(getAllJobs);
+router.route("/stats").get(showStats);
+router.route("/:id").get(getJob).delete(deleteJob).patch(updateJob);
 
 module.exports = router;
 ```
@@ -586,8 +586,8 @@ module.exports = router;
 controllers/jobs
 
 ```js
-const mongoose = require('mongoose');
-const moment = require('moment');
+const mongoose = require("mongoose");
+const moment = require("moment");
 ```
 
 - [Javascript Nuggets - Reduce Basics](https://youtu.be/3WkW9nrS2mw)
@@ -599,7 +599,7 @@ controllers/jobs
 const showStats = async (req, res) => {
   let stats = await Job.aggregate([
     { $match: { createdBy: mongoose.Types.ObjectId(req.user.userId) } },
-    { $group: { _id: '$status', count: { $sum: 1 } } },
+    { $group: { _id: "$status", count: { $sum: 1 } } },
   ]);
 
   stats = stats.reduce((acc, curr) => {
@@ -618,11 +618,11 @@ const showStats = async (req, res) => {
     { $match: { createdBy: mongoose.Types.ObjectId(req.user.userId) } },
     {
       $group: {
-        _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } },
+        _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
         count: { $sum: 1 },
       },
     },
-    { $sort: { '_id.year': -1, '_id.month': -1 } },
+    { $sort: { "_id.year": -1, "_id.month": -1 } },
     { $limit: 6 },
   ]);
   monthlyApplications = monthlyApplications
@@ -634,7 +634,7 @@ const showStats = async (req, res) => {
       const date = moment()
         .month(month - 1)
         .year(year)
-        .format('MMM Y');
+        .format("MMM Y");
       return { date, count };
     })
     .reverse();
@@ -661,7 +661,7 @@ monthlyApplications = monthlyApplications
     const date = moment()
       .month(month - 1)
       .year(year)
-      .format('MMM Y');
+      .format("MMM Y");
     return { date, count };
   })
   .reverse();
