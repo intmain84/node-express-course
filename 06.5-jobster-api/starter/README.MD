@@ -625,6 +625,7 @@ const showStats = async (req, res) => {
     { $sort: { "_id.year": -1, "_id.month": -1 } },
     { $limit: 6 },
   ]);
+
   monthlyApplications = monthlyApplications
     .map((item) => {
       const {
@@ -638,6 +639,8 @@ const showStats = async (req, res) => {
       return { date, count };
     })
     .reverse();
+   
+   console.log(monthlyApplications)
 
   res.status(StatusCodes.OK).json({ defaultStats, monthlyApplications });
 };
